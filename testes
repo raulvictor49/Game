@@ -1,0 +1,122 @@
+import pygame
+from pygame.locals import *
+from sys import exit # quando fechar a janela que será criada, esta função será chamada e fechará a janela.
+from random import randint # para mudar a posição do retângulo azul
+
+# inicia todas as funções e variavéis da biblioteca pygame
+pygame.init()
+
+# largura e altura da tela
+largura = 640
+altura = 480
+
+# essas variveis vão controlar os movimentos do meu retângulo
+# a cada iteração do loop essas variavéis vão mudar, dando a impressão de movimento
+x = largura / 2
+y = altura / 2 # faz com que o retângulo apareça no meio da tela
+
+x_azul = randint(40, 600)
+y_azul = randint(50, 430)
+
+# fonte do contador de chaves
+# primeiro parâmetro = fonte
+# segundo parâmetro = tamanho da fonte
+# terceiro parâmetro se o texto estará em negrito ou não
+# quarto parâmetro se o texto estará em italico ou não
+fonte = pygame.font.SysFont('arial', 20, True, True)
+pontos = 0
+'''
+# Obtém uma lista de todas as fontes disponíveis
+font_list = pygame.font.get_fonts()
+
+# Exibe a lista de fontes
+for font_name in font_list:
+    print(font_name)
+'''
+
+# criando a tela do jogo
+# a função set.mode vai receber uma tupla, e esta tupla vai receber a largura e a altura da tela respectivamente
+tela = pygame.display.set_mode((largura, altura))
+
+# altera o nome que aparece na janela
+pygame.display.set_caption('Jogo')
+
+
+# controla a taxa de frame do jogo
+relogio = pygame.time.Clock()
+
+# loop principal
+while True:
+    relogio.tick(200) # frames por segundo
+    tela.fill((0,0,0)) # "limpa" a tela a cada iteração
+    mensagem = f'chaves: {pontos}'
+
+    # primeiro parâmetro é a mensagem
+    # segundo parâmetro (Anti-Aliasing) controla o serrilhamento do texto
+    # terceiro parâmetro é a cor
+    texto_formatado = fonte.render(mensagem, True, (255,255,50))
+
+    for event in pygame.event.get():
+        # para fechar o jogo quando clicar em fechar
+        if event.type == QUIT:
+            pygame.quit()
+            exit()
+
+        '''# comando para controlar o retângulo
+        if event.type == KEYDOWN:
+            if event.key == K_a or event.key == K_LEFT:
+                x = x - 20
+            if event.key == K_d or event.key == K_RIGHT:
+                x = x + 20
+            if event.key == K_w or event.key == K_UP:
+                y = y - 20
+            if event.key == K_s or event.key == K_DOWN:
+                y = y + 20'''
+        
+        # para o retângulo continuar andando enquanto pressiona a tela
+        if pygame.key.get_pressed()[K_a]:
+            x = x - 20
+        if pygame.key.get_pressed()[K_d]:
+            x = x + 20
+        if pygame.key.get_pressed()[K_w]:
+            y = y - 20
+        if pygame.key.get_pressed()[K_s]:
+            y = y + 20
+
+
+    # desenhando um retângulo
+    # o primeiro parâmetro é onde ele vai ser desenhado, no caso dentro da tela
+    # segundo parâmetro é a cor do objeto
+    # terceiro parâmetro é a posição X e Y do retângulo, largura e altura, respectivamente
+    ret_vermelho = pygame.draw.rect(tela, (255,0,0), (x,y,40,50))
+    # desenhando um segundo retângulo para colisão
+    ret_azul = pygame.draw.rect(tela, (0,0,255), (x_azul,y_azul,40,50))
+
+    # colisão
+    if ret_vermelho.colliderect(ret_azul):
+        x_azul = randint(40, 600)
+        y_azul = randint(50, 430)
+        pontos += 1
+
+    # exibir o texto na tela
+    # primeiro parâmetro o texto formatado
+    # segundo parâmetro a posição X e Y que o texto vai ocupar na tela
+    tela.blit(texto_formatado, (520, 40))
+
+    # desenhando um circulo
+    # terceiro parâmetro X e Y(referenciado no meio do circulo), e o raio respectivamente
+    #pygame.draw.circle(tela, (0,0,255), (300,260), 40)
+
+
+
+    # desenhando uma linha
+    # terceiro parâmetro é um ponto onde a linha começa
+    # quarto parâmetro é onde a linha termina
+    # quinto parâmetro é a espessura da linha
+    #pygame.draw.line(tela, (255,255,0), (390,0), (390,600), 5)
+
+
+
+    # a cada iteração do loop principal do jogo, vai atualizar a tela do jogo
+    pygame.display.update()
+    
